@@ -126,14 +126,14 @@ WORKING="$HOME/$EXP_DIR/working"
 # -external-bin-dir "$HOME/mosesdecoder/tools"
 
 
-cd $WORKING
+# cd $WORKING
 
-"$MOSSES_MERT" "$CORPUS/tune.true_tagged.$LANG2" "$CORPUS/tune.true_tagged.$LANG1" \
-    "$HOME/mosesdecoder/bin/moses" \
-    "$WORKING/train/model/model/moses.ini" \
-    -mertdir "$HOME/mosesdecoder/bin/" \
-    -rootdir "$HOME/mosesdecoder/scripts" \
-    -decoder-flags '-threads 4'
+# "$MOSSES_MERT" "$CORPUS/tune.true.$LANG2" "$CORPUS/tune.true.$LANG1" \
+#     "$HOME/mosesdecoder/bin/moses" \
+#     "$WORKING/train/model/model/moses.ini" \
+#     -mertdir "$HOME/mosesdecoder/bin/" \
+#     -rootdir "$HOME/mosesdecoder/scripts" \
+#     -decoder-flags '-threads 4'
 
 ####Binaries-------------------------------------------------------------------------------
 
@@ -162,13 +162,13 @@ cd $WORKING
 # # # # # # ##run blue script------------------------------------------------------------------------------------------------
 # "$HOME/mosesdecoder/scripts/generic/multi-bleu.perl" -lc "$CORPUS/test.true."$LANG1 < "$CORPUS/test.translated."$LANG1 > "$CORPUS/BLUElog."$LANG2"_"$LANG1
 
-# #continue to bidirectional
-# echo "writting BLUE for EXP-$LANG2-$LANG1 Done!! "
-# echo "================================================================================"
-# echo "Starting EXP-$LANG1-$LANG2"
-# cd "$START_DIR/scripts/"
+#continue to bidirectional
+echo "writting BLUE for EXP-$LANG2-$LANG1 Done!! "
+echo "================================================================================"
+echo "Starting EXP-$LANG1-$LANG2"
+cd "$START_DIR/scripts/"
 
-# bash bi_factored_srilim_based_exp.sh
+bash bi_factored_exp.sh
 
-# echo "writting BLUE for EXP-$LANG1-$LANG2 Done!! "
-# echo "Success !!! Two Experiment done"
+echo "writting BLUE for EXP-$LANG1-$LANG2 Done!! "
+echo "Success !!! Two Experiment done"

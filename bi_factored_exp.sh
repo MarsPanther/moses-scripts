@@ -3,7 +3,7 @@
 LANG1="en"
 LANG2="am"
 START_DIR="$HOME/Desktop/data"
-EXP_DIR="Factored-EXP-$LANG1-$LANG2-4"
+EXP_DIR="Factored-exp-$LANG1-$LANG2-4"
 
 mkdir $HOME/$EXP_DIR
 mkdir $HOME/$EXP_DIR/corpus
@@ -37,7 +37,7 @@ cp "$SRC$LANG2.txt"  "$PreProcess/"
 cd $PreProcess
 python3  "$SELECTOR_SCRIPS" $LANG1 $LANG2
 
-# # # English tokenization and truecasing
+# # English tokenization and truecasing
 "$MOSSES_TOKEN"  -l en < "$PreProcess/train.$LANG1" > "$PreProcess/train.$LANG1.tok.$LANG1"
 "$MOSSES_TRUE_CASE_MOD"  --model "$PreProcess/truecase-model.$LANG1" --corpus "$PreProcess/train.$LANG1.tok.$LANG1"
 "$MOSSES_TRUE_CASE_BULD"  --model "$PreProcess/truecase-model.$LANG1" < "$PreProcess/train.$LANG1.tok.$LANG1" > "$PreProcess/train.true.$LANG1"
@@ -100,43 +100,31 @@ python3 "$COMBINE_FILES" "combined_tagged_lm_tag_sets.$LANG1"  "combined_tagged_
 python3 "$COMBINE_FILES" "combined_tagged_lm_tag_sets.$LANG2"  "combined_tagged_lm_tag_sets.$LANG2" "combined_tagged_lm_tag_sets_double.$LANG2"
 
 # lang model
-$HOME/mosesdecoder/bin/lmplz -o 3 --interpolate_unigrams 0 --discount_fallback <"$LM/combined_lm.$LANG1" >"$LM/lm.$LANG2-$LANG1.arpa.$LANG1"
-$HOME/mosesdecoder/bin/lmplz -o 3 --interpolate_unigrams 0 --discount_fallback <"$LM/combined_lm.$LANG2" >"$LM/lm.$LANG2-$LANG1.arpa.$LANG2"
-$HOME/mosesdecoder/bin/lmplz -o 3 --interpolate_unigrams 0 --discount_fallback <"$LM/combined_tagged_lm_tag_sets_double.$LANG1" >"$LM/pos.arpa.$LANG1"
-$HOME/mosesdecoder/bin/lmplz -o 3 --interpolate_unigrams 0 --discount_fallback <"$LM/combined_tagged_lm_tag_sets_double.$LANG2" >"$LM/pos.arpa.$LANG2"
+$HOME/mosesdecoder/bin/lmplz -o 4 --interpolate_unigrams 0 --discount_fallback <"$LM/combined_lm.$LANG1" >"$LM/surface.arpa.$LANG1"
+$HOME/mosesdecoder/bin/lmplz -o 4 --interpolate_unigrams 0 --discount_fallback <"$LM/combined_lm.$LANG2" >"$LM/surface.arpa.$LANG2"
+$HOME/mosesdecoder/bin/lmplz -o 4 --interpolate_unigrams 0 --discount_fallback <"$LM/combined_tagged_lm_tag_sets_double.$LANG1" >"$LM/pos.arpa.$LANG1"
+$HOME/mosesdecoder/bin/lmplz -o 4 --interpolate_unigrams 0 --discount_fallback <"$LM/combined_tagged_lm_tag_sets_double.$LANG2" >"$LM/pos.arpa.$LANG2"
 
-# # ####Binarize LM-------------------------------------------------------------------------------------
+# # # ####Binarize LM-------------------------------------------------------------------------------------
 
-"$HOME/mosesdecoder/bin/build_binary" "$LM/lm.$LANG2-$LANG1.arpa.$LANG1" "$LM/lm.$LANG2-$LANG1.blm.$LANG1"
-"$HOME/mosesdecoder/bin/build_binary" "$LM/lm.$LANG2-$LANG1.arpa.$LANG2" "$LM/lm.$LANG2-$LANG1.blm.$LANG2"
+"$HOME/mosesdecoder/bin/build_binary" "$LM/surface.arpa.$LANG1" "$LM/surface.blm.$LANG1"
+"$HOME/mosesdecoder/bin/build_binary" "$LM/surface.arpa.$LANG2" "$LM/surface.blm.$LANG2"
 "$HOME/mosesdecoder/bin/build_binary" "$LM/pos.arpa.$LANG1" "$LM/pos.blm.$LANG1"
 "$HOME/mosesdecoder/bin/build_binary" "$LM/pos.arpa.$LANG1" "$LM/pos.blm.$LANG2"
 
-# ##Translation Model-------------------------------------------------------------------------------------------
-
+# ##Translation Model-------------------------------------------------------------------------
 
 cd $WORKING
 
-"$MOSSES_TRN" \
-    -cores 4 \
-    -root-dir "$WORKING/train/model" \
-    -corpus "$CORPUS/train.clean_tagged" \
-    -f "$LANG1" -e "$LANG2" \
-    -lm 0:3:"$LM/lm.$LANG2-$LANG1.blm."$LANG2 \
-    -external-bin-dir "$HOME/mosesdecoder/tools" \
-    -input-factor-max 4
+"$MOSSES_TRN" -cores 4 \
+-root-dir "$WORKING/train/model" \
+-corpus "$CORPUS/train.clean_tagged" \
+-f "$LANG1" -e "$LANG2" \
+-lm 0:4:"$LM/surface.blm."$LANG2 \
+-lm 2:4:"$LM/pos.blm."$LANG2 \
+-translation-factors 0-0,2 \
+-external-bin-dir "$HOME/mosesdecoder/tools"
 
-# cd $WORKING
-
-# "$MOSSES_TRN" \
-# -cores 4 \
-# -root-dir "$WORKING/train/model" \
-# -corpus "$CORPUS/train.clean_tagged" \
-# -f "$LANG2" -e "$LANG1" \
-# -lm 0:3:"$LM/lm.$LANG2-$LANG1.blm."$LANG1 \
-# -lm 0:3:"$LM/pos.blm."$LANG1 \
-# -translation-factors 0-0,2 \
-# -external-bin-dir "$HOME/mosesdecoder/tools"
 
 cd $WORKING
 
@@ -147,9 +135,7 @@ cd $WORKING
     -rootdir "$HOME/mosesdecoder/scripts" \
     -decoder-flags '-threads 4'
 
-
-
-####Binaries----------------------------------------------------------------------------------------------------
+####Binaries-------------------------------------------------------------------------------
 
 
 
@@ -177,5 +163,4 @@ cd $WORKING
 "$HOME/mosesdecoder/scripts/generic/multi-bleu.perl" -lc "$CORPUS/test.true."$LANG2 < "$CORPUS/test.translated."$LANG2 > "$CORPUS/BLUElog."$LANG1"_"$LANG2
 
 #continue to bidirectional
-echo "writting BLUE for EXP-$LANG2-$LANG1 Done!! "
-echo "All experiments are done "
+echo "writting BLUE for EXP-$LANG1-$LANG2 Done!! "
