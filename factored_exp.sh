@@ -163,12 +163,12 @@ WORKING="$HOME/$EXP_DIR/working"
 # "$HOME/mosesdecoder/scripts/generic/multi-bleu.perl" -lc "$CORPUS/test.true."$LANG1 < "$CORPUS/test.translated."$LANG1 > "$CORPUS/BLUElog."$LANG2"_"$LANG1
 
 #continue to bidirectional
-echo "writting BLUE for EXP-$LANG2-$LANG1 Done!! "
-echo "================================================================================"
-echo "Starting EXP-$LANG1-$LANG2"
-cd "$START_DIR/scripts/"
+# echo "writting BLUE for EXP-$LANG2-$LANG1 Done!! "
+# echo "================================================================================"
+# echo "Starting EXP-$LANG1-$LANG2"
+# cd "$START_DIR/scripts/"
 
-bash bi_factored_exp.sh
+# bash bi_factored_exp.sh
 
-echo "writting BLUE for EXP-$LANG1-$LANG2 Done!! "
-echo "Success !!! Two Experiment done"
+# echo "writting BLUE for EXP-$LANG1-$LANG2 Done!! "
+# echo "Success !!! Two Experiment done"
