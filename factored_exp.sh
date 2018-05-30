@@ -3,7 +3,7 @@
 LANG1="en"
 LANG2="am"
 START_DIR="$HOME/Desktop/data"
-EXP_DIR="Factored-exp-$LANG2-$LANG1-4"
+EXP_DIR="Factored-Trigram-$LANG2-$LANG1"
 
 # mkdir $HOME/$EXP_DIR
 # mkdir $HOME/$EXP_DIR/corpus
