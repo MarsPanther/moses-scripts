@@ -160,7 +160,7 @@ cd $WORKING
 "$HOME/mosesdecoder/bin/moses" -f "$WORKING/train/model/model/moses.ini" < "$CORPUS/test.true."$LANG2 > "$CORPUS/test.translated."$LANG1
 
 # # # # # ##run blue script------------------------------------------------------------------------------------------------
-"$HOME/mosesdecoder/scripts/generic/multi-bleu.perl" -lc "$CORPUS/test.true."$LANG1 < "$CORPUS/test.translated."$LANG1 > "$HOME/$EXP_DIR/blue_$LANG2_$LANG1.txt"
+"$HOME/mosesdecoder/scripts/generic/multi-bleu.perl" -lc "$CORPUS/test.true."$LANG1 < "$CORPUS/test.translated."$LANG1 > "$HOME/$EXP_DIR/blue_to_$LANG1.txt"
 
 continue to bidirectional
 echo "writting BLUE for EXP-$LANG2-$LANG1 Done!! "
